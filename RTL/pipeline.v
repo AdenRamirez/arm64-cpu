@@ -70,17 +70,17 @@ module pipeline(
     assign opcode = id_instr[31:21];
     
     control u_control(
-    .reg2loc(reg2loc),
-    .alusrc(id_alusrc),
-    .mem2reg(id_mem2reg),
-    .regwrite(id_regwrite),
-    .memread(id_memread),
-    .memwrite(id_memwrite),
-    .branch(id_branch),
-    .uncond_branch(id_uncond_branch),
-    .aluop(id_aluctrl),
-    .signop(signop),
-    .opcode(opcode)
+        .reg2loc(reg2loc),
+        .alusrc(id_alusrc),
+        .mem2reg(id_mem2reg),
+        .regwrite(id_regwrite),
+        .memread(id_memread),
+        .memwrite(id_memwrite),
+        .branch(id_branch),
+        .uncond_branch(id_uncond_branch),
+        .aluop(id_aluctrl),
+        .signop(signop),
+        .opcode(opcode)
      );
   
     wire [4:0]  id_rd;
@@ -97,14 +97,14 @@ module pipeline(
     wire[63:0] id_MemtoRegOut;
     
     RegisterFile rf(
-    .BusA(id_busA),
-    .BusB(id_busB),
-    .BusW(id_MemtoRegOut), //Placeholder
-    .RA(rm),
-    .RB(rn),
-    .RW(id_rd),//Placeholder
-    .RegWr(id_regwrite), //Placeholder
-    .Clk(CLK)
+        .BusA(id_busA),
+        .BusB(id_busB),
+        .BusW(id_MemtoRegOut), //Placeholder
+        .RA(rm),
+        .RB(rn),
+        .RW(id_rd),//Placeholder
+        .RegWr(id_regwrite), //Placeholder
+        .Clk(CLK)
      );
     
     wire[63:0] id_immediate;
@@ -135,40 +135,104 @@ module pipeline(
     
     
     pipe_id_ex ID_EX(
-    .clk(CLK),
-    .resetl(resetl),
-    .id_busA(id_busA),
-    .id_busB(id_busB),
-    .id_nextseqpc(id_nextseqpc),
-    .id_immediate(id_immediate),
-    .id_rd(id_rd),
-    .id_alusrc(id_alusrc),
-    .id_mem2reg(id_mem2reg),
-    .id_regwrite(id_regwrite),
-    .id_memread(id_memread),
-    .id_memwrite(id_memwrite),
-    .id_branch(id_branch),
-    .id_uncond_branch(id_uncond_branch),
-    .id_aluctrl(id_aluctrl),
-    .ex_busA(ex_busA),
-    .ex_busB(ex_busB),
-    .ex_nextseqpc(ex_nextseqpc),
-    .ex_immediate(ex_immediate),
-    .ex_rd(ex_rd),
-    .ex_alusrc(ex_alusrc),
-    .ex_mem2reg(ex_mem2reg),
-    .ex_regwrite(ex_regwrite),
-    .ex_memread(ex_memread),
-    .ex_memwrite(ex_memwrite),
-    .ex_branch(ex_branch),
-    .ex_uncond_branch(ex_uncond_branch),
-    .ex_aluctrl(ex_aluctrl)
+        .clk(CLK),
+        .resetl(resetl),
+        .id_busA(id_busA),
+        .id_busB(id_busB),
+        .id_nextseqpc(id_nextseqpc),
+        .id_immediate(id_immediate),
+        .id_rd(id_rd),
+        .id_alusrc(id_alusrc),
+        .id_mem2reg(id_mem2reg),
+        .id_regwrite(id_regwrite),
+        .id_memread(id_memread),
+        .id_memwrite(id_memwrite),
+        .id_branch(id_branch),
+        .id_uncond_branch(id_uncond_branch),
+        .id_aluctrl(id_aluctrl),
+        
+        .ex_busA(ex_busA),
+        .ex_busB(ex_busB),
+        .ex_nextseqpc(ex_nextseqpc),
+        .ex_immediate(ex_immediate),
+        .ex_rd(ex_rd),
+        .ex_alusrc(ex_alusrc),
+        .ex_mem2reg(ex_mem2reg),
+        .ex_regwrite(ex_regwrite),
+        .ex_memread(ex_memread),
+        .ex_memwrite(ex_memwrite),
+        .ex_branch(ex_branch),
+        .ex_uncond_branch(ex_uncond_branch),
+        .ex_aluctrl(ex_aluctrl)
     );
     
     // ----------------------------
     // Execution Stage
     // Variables marked with ex in the beginning indicate that they will be sent to the next stage
     // ----------------------------
+    wire[63:0] alumuxout;
+    wire ex_zero;
+    wire[63:0] ex_aluout;
+    
+    assign alumuxout = (ex_alusrc) ? ex_immediate : ex_busB;
+    
+    ALU alu(
+        .BusW(ex_aluout),
+        .Zero(ex_zero),
+        .BusA(ex_busA),
+        .BusB(alumuxout),
+        .ALUCtrl(ex_aluctrl)
+      );
+      
+    // ----------------------------
+    // EX/MEM Register
+    // ----------------------------
+    
+    wire mem_zero;
+    wire [63:0] mem_aluout;
+    wire [63:0] mem_nextseqpc;
+    wire [63:0] mem_busB;
+    wire [4:0] mem_rd;
+    wire mem_mem2reg;
+    wire mem_regwrite;
+    wire mem_memwrite;
+    wire mem_memread;
+    wire mem_branch;
+    wire mem_uncond_branch;
+        
+    pipe_ex_mem EX_MEM(
+        .clk(CLK),
+        .resetl(resetl),
+        .ex_zero(ex_zero),
+        .ex_aluout(ex_aluout),
+        .ex_nextseqpc(ex_nextseqpc),
+        .ex_busB(ex_busB),
+        .ex_rd(ex_rd),
+        .ex_mem2reg(ex_mem2reg),
+        .ex_regwrite(ex_regwrite),
+        .ex_memread(ex_memread),
+        .ex_memwrite(ex_memwrite),
+        .ex_branch(ex_branch),
+        .ex_uncond_branch(ex_uncond_branch),
+        
+        .mem_zero(mem_zero),
+        .mem_aluout(mem_aluout),
+        .mem_nextseqpc(mem_nextseqpc),
+        .mem_busB(mem_busB),
+        .mem_rd(mem_rd),
+        .mem_mem2reg(mem_mem2reg),
+        .mem_regwrite(mem_regwrite),
+        .mem_memwrite(mem_memwrite),
+        .mem_memread(mem_memread),
+        .mem_branch(mem_branch),
+        .mem_uncond_branch(mem_uncond_branch)
+    );
+    
+    // ----------------------------
+    // Memory Stage
+    // Variables marked with ex in the beginning indicate that they will be sent to the next stage
+    // ----------------------------
+    
     
     assign MemtoRegOut = 64'b0;
 
