@@ -14,7 +14,7 @@ module pipe_if_id (
             id_nextseqpc <= 64'b0;
         end else begin
             id_instr <= if_instr;
-            id_nextseqpc <= if_nextpc;
+            id_nextseqpc <= if_nextseqpc;
         end
     end
 endmodule
