@@ -95,6 +95,9 @@ module pipeline(
     wire[63:0] id_busA;
     wire[63:0] id_busB;
     wire[63:0] id_MemtoRegOut;
+    wire[4:0] wb_rd;
+    wire wb_regwrite;
+    wire[63:0] wb_memtoRegOut;
     
     RegisterFile rf(
         .BusA(id_busA),
@@ -246,12 +249,10 @@ module pipeline(
     // ----------------------------
     // MEM/WB Register
     // ----------------------------
-    wire[4:0] wb_rd;
-    wire wb_regwrite;
-    wire[63:0] wb_memtoRegOut;
+    wire[63:0] mem_memtoRegOut;
     
     assign mem_memtoRegOut = mem_mem2reg ? mem_memout : mem_aluout;
-    
+    assign MemtoRegOut = wb_memtoRegOut;
    
     pipe_mem_wb MEM_WB(
         .clk(CLK),

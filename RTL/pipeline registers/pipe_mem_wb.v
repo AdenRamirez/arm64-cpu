@@ -19,7 +19,10 @@ module pipe_mem_wb(
         end else begin
             wb_rd <= mem_rd;
             wb_regwrite <= mem_regwrite;
-            wb_memtoRegOut <= mem_memtoRegOut;
+            if (mem_regwrite)
+                wb_memtoRegOut <= mem_memtoRegOut;
+            else
+                wb_memtoRegOut <= 64'b0;
         end
     end
 

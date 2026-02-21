@@ -43,14 +43,14 @@ module DataMemory(
 
   always @(*) begin
     if (MemoryRead) begin
-      ReadData[63:56] <= memBank[Address + 0];
-      ReadData[55:48] <= memBank[Address + 1];
-      ReadData[47:40] <= memBank[Address + 2];
-      ReadData[39:32] <= memBank[Address + 3];
-      ReadData[31:24] <= memBank[Address + 4];
-      ReadData[23:16] <= memBank[Address + 5];
-      ReadData[15:8]  <= memBank[Address + 6];
-      ReadData[7:0]   <= memBank[Address + 7];
+      ReadData[63:56] = memBank[Address + 0];
+      ReadData[55:48] = memBank[Address + 1];
+      ReadData[47:40] = memBank[Address + 2];
+      ReadData[39:32] = memBank[Address + 3];
+      ReadData[31:24] = memBank[Address + 4];
+      ReadData[23:16] = memBank[Address + 5];
+      ReadData[15:8]  = memBank[Address + 6];
+      ReadData[7:0]   = memBank[Address + 7];
     end else
         ReadData = 64'd0;
   end
