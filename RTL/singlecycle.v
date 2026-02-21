@@ -101,7 +101,7 @@ module singlecycle(
     .Uncondbranch(uncond_branch),
     .NextPC(nextpc)
   );
-
+  
   // ----------------------------
   // Register file (X31 as XZR)
   // ----------------------------

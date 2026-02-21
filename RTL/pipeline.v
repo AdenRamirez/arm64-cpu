@@ -99,11 +99,11 @@ module pipeline(
     RegisterFile rf(
         .BusA(id_busA),
         .BusB(id_busB),
-        .BusW(id_MemtoRegOut), //Placeholder
+        .BusW(wb_memtoRegOut),
         .RA(rm),
         .RB(rn),
-        .RW(id_rd),//Placeholder
-        .RegWr(id_regwrite), //Placeholder
+        .RW(wb_rd),
+        .RegWr(wb_regwrite),
         .Clk(CLK)
      );
     
@@ -230,10 +230,40 @@ module pipeline(
     
     // ----------------------------
     // Memory Stage
-    // Variables marked with ex in the beginning indicate that they will be sent to the next stage
+    // Variables marked with mem in the beginning indicate that they will be sent to the next stage
     // ----------------------------
+    wire[63:0] mem_memout;
     
+    DataMemory dmem(
+        .ReadData(mem_memout),
+        .Address(mem_aluout),
+        .WriteData(mem_busB),
+        .MemoryRead(mem_memread),
+        .MemoryWrite(mem_memwrite),
+        .Clock(CLK)
+     );
     
-    assign MemtoRegOut = 64'b0;
+    // ----------------------------
+    // MEM/WB Register
+    // ----------------------------
+    wire[4:0] wb_rd;
+    wire wb_regwrite;
+    wire[63:0] wb_memtoRegOut;
+    
+    assign mem_memtoRegOut = mem_mem2reg ? mem_memout : mem_aluout;
+    
+   
+    pipe_mem_wb MEM_WB(
+        .clk(CLK),
+        .resetl(resetl),
+        .mem_rd(mem_rd),
+        .mem_regwrite(mem_regwrite),
+        .mem_memtoRegOut(mem_memtoRegOut),
+        
+        .wb_rd(wb_rd),
+        .wb_regwrite(wb_regwrite),
+        .wb_memtoRegOut(wb_memtoRegOut)
+    );
+    
 
 endmodule
