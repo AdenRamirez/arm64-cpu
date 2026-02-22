@@ -211,7 +211,7 @@ def first_pass(lines:list[str], labels:dict, pc:int, instruction_line:int):
             label_update(instruction, pc, labels)
             instruction_line += 1
             continue
-        #Ensure the instruction is okay
+        #Ensure the instruction is okay 
         elif line_type == "instruction":
             instruction = instruction_list[0].upper()
             arg_count = get_args(instruction, instruction_line)
@@ -256,10 +256,11 @@ def second_pass(lines:list[str], labels:dict, pc:int, instruction_line:int):
             case "CB":
                 if (not label_check(instruction_list[2], labels)):
                     raise KeyError(f"Error on line {instruction_line}, label {instruction_list[2]} not found")
+                cb_reg_check(instruction_list[1], instruction_line)
                 offset = (labels[instruction_list[2]] - pc)//4
                 address = format(offset & 0x7FFFF, '019b')
-                rt = cb_reg_binary(instruction_list[2]) 
-                instruction_bin = opcode + address + rt
+                rt = cb_reg_binary(instruction_list[1]) 
+                instruction_bin = "1" + opcode + address + rt
                 instruction_hex = f"{int(instruction_bin,2):08X}"
             case "M":
                 #MOVZ X13, 0xDEF0, LSL 0
@@ -268,7 +269,7 @@ def second_pass(lines:list[str], labels:dict, pc:int, instruction_line:int):
                 m_reg_check(instruction_list[1], instruction_list[2], instruction_list[4], instruction_line)
                 rt, immediate, shiftamt = m_reg_binary(instruction_list[1], instruction_list[2], instruction_list[4])
                 instruction_bin = opcode + shiftamt + immediate + rt 
-                instruction_hex = f"{int(instruction_bin, 2):08x}"
+                instruction_hex = f"{int(instruction_bin, 2):08X}"
                 
         instruction_hex_list.append(instruction_hex)
         instruction_line += 1

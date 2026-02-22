@@ -22,12 +22,12 @@ module signExtender(
 
       3'b010: begin
         // B-type: imm26 sign-extended
-        Imm64 = {{38{Imm26[25]}}, Imm26};
+        Imm64 = {{38{Imm26[25]}}, Imm26} << 2;
       end
 
       3'b011: begin
         // CBZ-type: imm19 in [23:5], sign-extended
-        Imm64 = {{45{Imm26[23]}}, Imm26[23:5]};
+        Imm64 = {{45{Imm26[23]}}, Imm26[23:5]} << 2;
       end
 
       3'b100: begin
