@@ -112,7 +112,7 @@ To run simulation to completion:
     run all
 
 Test programs validate instruction execution and pipeline stage
-interaction under hazard-free conditions. Program tests can be implemented by navigating to the instruction_memory.v file and adding to the case statement in the following format where data is the assembly instructions written as binary. Then navigate to SingleCycleProcTest_v.v and edit this file to ensure the results are correct. 
+interaction under hazard-free conditions. Program tests can be implemented by creating an .asm file in the "Assembly files" directory and then running asmLoader.py and inputting the title. After this the Instruction Memory module will be edited and when you run your simulation your resule will show. current cycle, current pc, if instruction, id instruction, executution rd and regwrite, memory rd and memory regwrite, wb rd and wb regwrite, and memtoRegOut. 
 
 ------------------------------------------------------------------------
 
@@ -120,7 +120,8 @@ interaction under hazard-free conditions. Program tests can be implemented by na
 
 Planned progression:
 
-1.  Structural 5-stage pipeline (current phase)
-2.  Data hazard detection and forwarding
-3.  Control hazard handling
-4.  Branch prediction algorithms
+1.  Structural 5-stage pipeline (Complete)
+2.  Python Assembler (Complete)
+3.  Data hazard detection and forwarding (Current Phase)
+4.  Control hazard handling
+5.  Branch prediction algorithms
