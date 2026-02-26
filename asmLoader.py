@@ -5,17 +5,17 @@ INSTRUCTION_MEMORY_FILE_PATH = "RTL/instruction_memory.v"
 
 #Taken directly from the verilog header
 INSTRUCTION_INFO = {
-    "ADD":  {"args": 4, "type": "R", "opcode": "0000101100"},
-    "SUB":  {"args": 4, "type": "R", "opcode": "1100101100"},
-    "AND":  {"args": 4, "type": "R", "opcode": "0000101000"}, 
-    "ORR":  {"args": 4, "type": "R", "opcode": "0010101000"},
-    "ADDI": {"args": 4, "type": "I", "opcode": "001000100"},
+    "ADD":  {"args": 4, "type": "R", "opcode": "10001011000"},
+    "SUB":  {"args": 4, "type": "R", "opcode": "11001011000"},
+    "AND":  {"args": 4, "type": "R", "opcode": "10001010000"}, 
+    "ORR":  {"args": 4, "type": "R", "opcode": "10101010000"},
+    "ADDI": {"args": 4, "type": "I", "opcode": "101000100"},
     "SUBI": {"args": 4, "type": "I", "opcode": "101000100"},
     "MOVZ": {"args": 5, "type": "M", "opcode": "110100101"},
-    "LDUR": {"args": 4, "type": "D", "opcode": "00111000010"},
-    "STUR": {"args": 4, "type": "D", "opcode": "00111000000"},
+    "LDUR": {"args": 4, "type": "D", "opcode": "11111000010"},
+    "STUR": {"args": 4, "type": "D", "opcode": "11111000000"},
     "B":    {"args": 2, "type": "B", "opcode": "00101"},
-    "CBZ":  {"args": 3, "type": "CB", "opcode": "0110100"}
+    "CBZ":  {"args": 3, "type": "CB", "opcode": "1110100"}
 }
 
 def write_instructions_to_file(instruction_hex_list: list[str], file_path: str):
