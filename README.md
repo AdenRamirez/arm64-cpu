@@ -1,13 +1,17 @@
-# ARM64 5-Stage Pipelined CPU (Verilog, Vivado)
+# ARM64 CPU (Verilog, Vivado)
 
-This repository contains a 64-bit ARM-like CPU implemented as a classic
-5-stage pipeline in Verilog.
+This repository contains a 64-bit ARM-like CPU.
 
-The design is a refactor of a previously validated
-single-cycle CPU and represents the first phase of a fully hazard-aware pipelined
-processor.
+-----------------------------------------------------------------------------
 
-------------------------------------------------------------------------
+## Project Purpose
+The purpose of this project is to create a multi-year spanning project
+implementing computer architecture concepts learned in class to reinforce 
+and gain in experience. This project will span from Junior Spring (2026)
+Masters Spring (2028) incremently building towards a 2-wide issue superscalar
+
+
+-----------------------------------------------------------------------------
 
 ## Architecture Overview
 
@@ -26,40 +30,34 @@ to the original single-cycle implementation.
 Control signals are generated in the **ID stage** and propagated forward
 through the pipeline registers.
 
-------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 ## Current Scope
 
-This version focuses strictly on structural pipelining and functional
-correctness under hazard-free instruction sequences.
-
 Implemented features:
+- 64-bit datapath
+- 32-entry register file (2 read ports, 1 write port)
+- Big-endian addressed data memory
+- Clean module separation (stages and pipeline registers)
+- Data hazard detection and forwarding (EX-EX and MEM-EX)
+- Load-use stall logic
+- Control hazard handling (in progress)
 
--   64-bit datapath
--   32-entry register file (2 read ports, 1 write port)
--   Big-endian addressed data memory
--   Clean module separation (stages and pipeline registers)
--   Functionally equivalent to the original single-cycle baseline (when
-    hazards are not present)
-
-------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 ## Hazard Handling
 
-Hazard detection and forwarding are intentionally ignored until the standard 5-stage pipeline is validated. 
+Implemented:
+- Data hazard detection unit
+- Forwarding paths (EX-EX and MEM-EX)
+- Load-use stall logic
 
-This version assumes hazard-free instruction sequences for correctness
-verification.
+In progress:
+- Control hazard handling
+- Branch prediction
+- Branch Target Buffer
 
-Planned enhancements include:
-
--   Data hazard detection unit
--   Forwarding paths
--   Load-use stall logic
--   Control hazard handling
--   Branch prediction experiments
-
-------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 ## Instruction Subset
 
@@ -88,7 +86,7 @@ Supported instructions:
 
 X31 is implemented as **XZR**.
 
-------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 ## Relationship to Single-Cycle Design
 
@@ -101,27 +99,47 @@ datapath into stage-isolated logic blocks.
 Original single-cycle implementation:
 https://github.com/AdenRamirez/Single-Cycle-CPU
 
-------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 ## Simulation
 
-Simulation is performed using Vivado.
+1. Create an .asm file in the Assembly Files directory
+2. Run asmLoader.py and enter the filename when prompted
+3. Set line 35 in tb_pipeline.v to desired cycles
+4. Open Vivado and run simulation to completion: run all
 
-To run simulation to completion:
+If there are any issues with the Assembly Loader please create a github issue
 
-    run all
-
-Test programs validate instruction execution and pipeline stage
-interaction under hazard-free conditions. Program tests can be implemented by creating an .asm file in the "Assembly files" directory and then running asmLoader.py and inputting the title. After this the Instruction Memory module will be edited and when you run your simulation your resule will show. current cycle, current pc, if instruction, id instruction, executution rd and regwrite, memory rd and memory regwrite, wb rd and wb regwrite, and memtoRegOut. 
-
-------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 ## Development Roadmap
 
 Planned progression:
 
-1.  Structural 5-stage pipeline (Complete)
-2.  Python Assembler (Complete)
-3.  Data hazard detection and forwarding (Current Phase)
-4.  Control hazard handling
-5.  Branch prediction algorithms
+1. Structural 5-stage pipeline (Complete)
+2. Python Assembler (Complete)
+3. Data hazard detection and forwarding (Complete)
+4. Control hazard handling (Current Phase)
+5. Branch prediction (static → 1-bit → 2-bit saturating counter)
+6. Branch Target Buffer
+7. Out-of-order execution via Tomasulo's algorithm
+   - Reservation stations
+   - Common Data Bus
+   - Register renaming
+   - Reorder Buffer for precise exceptions
+8. 2-wide superscalar implementation
+
+Planned Schedule:
+
+1. Structural 5-stage pipeline (Complete)
+2. Python Assembler (Complete)
+3. Data hazard detection and forwarding (Complete)
+4. Control hazard handling Spring 2026
+5. Branch prediction (static → 1-bit → 2-bit saturating counter) Spring 2026
+6. Branch Target Buffer Spring 2026
+7. Out-of-order execution via Tomasulo's algorithm Summer 2026 - Fall 2026 - Spring 2027
+   - Reservation stations
+   - Common Data Bus
+   - Register renaming
+   - Reorder Buffer for precise exceptions
+8. 2-wide superscalar implementation Spring 2027 - Spring 2028
