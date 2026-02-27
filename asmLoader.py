@@ -9,13 +9,13 @@ INSTRUCTION_INFO = {
     "SUB":  {"args": 4, "type": "R", "opcode": "11001011000"},
     "AND":  {"args": 4, "type": "R", "opcode": "10001010000"}, 
     "ORR":  {"args": 4, "type": "R", "opcode": "10101010000"},
-    "ADDI": {"args": 4, "type": "I", "opcode": "101000100"},
-    "SUBI": {"args": 4, "type": "I", "opcode": "101000100"},
+    "ADDI": {"args": 4, "type": "I", "opcode": "1001000100"},
+    "SUBI": {"args": 4, "type": "I", "opcode": "1101000100"},
     "MOVZ": {"args": 5, "type": "M", "opcode": "110100101"},
     "LDUR": {"args": 4, "type": "D", "opcode": "11111000010"},
     "STUR": {"args": 4, "type": "D", "opcode": "11111000000"},
-    "B":    {"args": 2, "type": "B", "opcode": "00101"},
-    "CBZ":  {"args": 3, "type": "CB", "opcode": "1110100"}
+    "B":    {"args": 2, "type": "B", "opcode": "100101"},
+    "CBZ":  {"args": 3, "type": "CB", "opcode": "10110011"}
 }
 
 def write_instructions_to_file(instruction_hex_list: list[str], file_path: str):
@@ -260,7 +260,7 @@ def second_pass(lines:list[str], labels:dict, pc:int, instruction_line:int):
                 offset = (labels[instruction_list[2]] - pc)//4
                 address = format(offset & 0x7FFFF, '019b')
                 rt = cb_reg_binary(instruction_list[1]) 
-                instruction_bin = "1" + opcode + address + rt
+                instruction_bin = opcode + address + rt
                 instruction_hex = f"{int(instruction_bin,2):08X}"
             case "M":
                 #MOVZ X13, 0xDEF0, LSL 0

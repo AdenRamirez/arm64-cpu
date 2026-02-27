@@ -4,21 +4,21 @@
 `define SIZE 1024
 
 // Instruction opcode patterns
-`define OPCODE_ANDREG 11'b?0001010???
-`define OPCODE_ORRREG 11'b?0101010???
-`define OPCODE_ADDREG 11'b?0?01011???
-`define OPCODE_SUBREG 11'b?1?01011???
+`define OPCODE_ANDREG 11'b10001010000
+`define OPCODE_ORRREG 11'b10101010000
+`define OPCODE_ADDREG 11'b10001011000
+`define OPCODE_SUBREG 11'b11001011000
 
-`define OPCODE_ADDIMM 11'b?0?10001???
-`define OPCODE_SUBIMM 11'b?1?10001???
+`define OPCODE_ADDIMM 11'b1001000100?
+`define OPCODE_SUBIMM 11'b1101000100?
 
 `define OPCODE_MOVZ   11'b110100101??
 
-`define OPCODE_B      11'b?00101?????
-`define OPCODE_CBZ    11'b?011010????
+`define OPCODE_B      11'b100101?????
+`define OPCODE_CBZ    11'b10110011???
 
-`define OPCODE_LDUR   11'b??111000010
-`define OPCODE_STUR   11'b??111000000
+`define OPCODE_LDUR   11'b1?111000010
+`define OPCODE_STUR   11'b1?111000000
 
 // ALU control encodings
 `define AND    4'b0000
