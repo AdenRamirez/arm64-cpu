@@ -7,7 +7,7 @@ This repository contains a 64-bit ARM-like CPU.
 ## Project Purpose
 The purpose of this project is to create a multi-year spanning project
 implementing computer architecture concepts learned in class to reinforce 
-and gain experience. This project will span from Junior Spring (2026)
+and gain experience. This project will span from Junior Spring (2026) to
 Masters Spring (2028) incremently building towards a 2-wide issue superscalar
 
 
