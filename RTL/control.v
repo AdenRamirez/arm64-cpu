@@ -2,7 +2,6 @@
 `include "cpu_defs.vh"
 
 module control(
-  output reg reg2loc,
   output reg alusrc,
   output reg mem2reg,
   output reg regwrite,
@@ -19,7 +18,6 @@ module control(
     casez (opcode)
 
       `OPCODE_ANDREG: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b0;
         mem2reg       = 1'b0;
         regwrite      = 1'b1;
@@ -28,11 +26,10 @@ module control(
         branch        = 1'b0;
         uncond_branch = 1'b0;
         aluop         = `AND;
-        signop        = 3'b000;
+        signop        = 3'b101;
       end
 
       `OPCODE_ORRREG: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b0;
         mem2reg       = 1'b0;
         regwrite      = 1'b1;
@@ -41,11 +38,10 @@ module control(
         branch        = 1'b0;
         uncond_branch = 1'b0;
         aluop         = `OR;
-        signop        = 3'b000;
+        signop        = 3'b101;
       end
 
       `OPCODE_ADDREG: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b0;
         mem2reg       = 1'b0;
         regwrite      = 1'b1;
@@ -54,11 +50,10 @@ module control(
         branch        = 1'b0;
         uncond_branch = 1'b0;
         aluop         = `ADD;
-        signop        = 3'b000;
+        signop        = 3'b101;
       end
 
       `OPCODE_SUBREG: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b0;
         mem2reg       = 1'b0;
         regwrite      = 1'b1;
@@ -67,11 +62,10 @@ module control(
         branch        = 1'b0;
         uncond_branch = 1'b0;
         aluop         = `SUB;
-        signop        = 3'b000;
+        signop        = 3'b101;
       end
 
       `OPCODE_ADDIMM: begin
-        reg2loc       = 1'b1;
         alusrc        = 1'b1;
         mem2reg       = 1'b0;
         regwrite      = 1'b1;
@@ -84,7 +78,6 @@ module control(
       end
 
       `OPCODE_SUBIMM: begin
-        reg2loc       = 1'b1;
         alusrc        = 1'b1;
         mem2reg       = 1'b0;
         regwrite      = 1'b1;
@@ -97,7 +90,6 @@ module control(
       end
 
       `OPCODE_B: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b0;
         mem2reg       = 1'b0;
         regwrite      = 1'b0;
@@ -110,7 +102,6 @@ module control(
       end
 
       `OPCODE_CBZ: begin
-        reg2loc       = 1'b1;   // rn selects Rt (instruction[4:0])
         alusrc        = 1'b0;
         mem2reg       = 1'b0;
         regwrite      = 1'b0;
@@ -123,7 +114,6 @@ module control(
       end
 
       `OPCODE_LDUR: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b1;
         mem2reg       = 1'b1;
         regwrite      = 1'b1;
@@ -136,7 +126,6 @@ module control(
       end
 
       `OPCODE_STUR: begin
-        reg2loc       = 1'b1;   // RB selects store data reg (instruction[4:0])
         alusrc        = 1'b1;
         mem2reg       = 1'b0;
         regwrite      = 1'b0;
@@ -149,7 +138,6 @@ module control(
       end
 
       `OPCODE_MOVZ: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b1;
         mem2reg       = 1'b0;
         regwrite      = 1'b1;
@@ -162,7 +150,6 @@ module control(
       end
 
       default: begin
-        reg2loc       = 1'b0;
         alusrc        = 1'b0;
         mem2reg       = 1'b0;
         regwrite      = 1'b0;
@@ -171,7 +158,7 @@ module control(
         branch        = 1'b0;
         uncond_branch = 1'b0;
         aluop         = `ADD;
-        signop        = 3'b000;
+        signop        = 3'b111;
       end
 
     endcase

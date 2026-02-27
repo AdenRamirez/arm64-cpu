@@ -3,6 +3,7 @@
 module pipe_if_id (
     input clk,
     input resetl,
+    input write_enable,
     input [31:0] if_instr,
     input [63:0] if_nextseqpc,
     output reg[31:0] id_instr,
@@ -12,7 +13,7 @@ module pipe_if_id (
         if (!resetl) begin
             id_instr <= 32'b0;
             id_nextseqpc <= 64'b0;
-        end else begin
+        end else if (write_enable) begin
             id_instr <= if_instr;
             id_nextseqpc <= if_nextseqpc;
         end

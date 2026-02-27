@@ -3,6 +3,7 @@
 module pipe_id_ex(
     input clk,
     input resetl,
+    input bubble,
     
     input [63:0] id_busA,
     input [63:0] id_busB,
@@ -17,7 +18,11 @@ module pipe_id_ex(
     input id_branch,
     input id_uncond_branch,
     input [3:0] id_aluctrl,
-    
+    input [4:0] id_rf1,
+    input [4:0] id_rf2,
+    input id_rf1_used,
+    input id_rf2_used,
+       
     output reg[63:0] ex_busA,
     output reg[63:0] ex_busB,
     output reg[63:0] ex_nextseqpc,
@@ -30,39 +35,69 @@ module pipe_id_ex(
     output reg ex_memwrite,
     output reg ex_branch,
     output reg ex_uncond_branch,
-    output reg[3:0] ex_aluctrl
+    output reg[3:0] ex_aluctrl,
+    output reg[4:0] ex_rf1,
+    output reg[4:0] ex_rf2,
+    output reg ex_rf1_used,
+    output reg ex_rf2_used
     );
     always @(posedge clk) begin
         if (!resetl) begin
-        ex_busA <= 64'b0;
-        ex_busB <= 64'b0;
-        ex_nextseqpc <= 64'b0;
-        ex_immediate <= 64'b0;
-        ex_rd <= 5'b0;
-        ex_alusrc <= 1'b0;
-        ex_mem2reg <= 1'b0;
-        ex_regwrite <= 1'b0;
-        ex_memread <= 1'b0;
-        ex_memwrite <= 1'b0;
-        ex_branch <= 1'b0;
-        ex_uncond_branch <= 1'b0;
-        ex_aluctrl <= 4'b0;
+            ex_busA <= 64'b0;
+            ex_busB <= 64'b0;
+            ex_nextseqpc <= 64'b0;
+            ex_immediate <= 64'b0;
+            ex_rd <= 5'b0;
+            ex_alusrc <= 1'b0;
+            ex_mem2reg <= 1'b0;
+            ex_regwrite <= 1'b0;
+            ex_memread <= 1'b0;
+            ex_memwrite <= 1'b0;
+            ex_branch <= 1'b0;
+            ex_uncond_branch <= 1'b0;
+            ex_aluctrl <= 4'b0;
+            ex_rf1 <= 5'b0;
+            ex_rf2 <= 5'b0;
+            ex_rf1_used <= 1'b0;
+            ex_rf2_used <= 1'b0;
         end
-        
+        else if (bubble) begin
+            ex_busA <= 64'b0;
+            ex_busB <= 64'b0;
+            ex_nextseqpc <= 64'b0;
+            ex_immediate <= 64'b0;
+            ex_rd <= 5'b0;
+            ex_alusrc <= 1'b0;
+            ex_mem2reg <= 1'b0;
+            ex_regwrite <= 1'b0;
+            ex_memread <= 1'b0;
+            ex_memwrite <= 1'b0;
+            ex_branch <= 1'b0;
+            ex_uncond_branch <= 1'b0;
+            ex_aluctrl <= 4'b0;
+            ex_rf1 <= 5'b0;
+            ex_rf2 <= 5'b0;
+            ex_rf1_used <= 1'b0;
+            ex_rf2_used <= 1'b0;
+        end
         else begin
-        ex_busA <= id_busA;
-        ex_busB <= id_busB;
-        ex_nextseqpc <= id_nextseqpc;
-        ex_immediate <= id_immediate;
-        ex_rd <= id_rd;
-        ex_alusrc <= id_alusrc;
-        ex_mem2reg <= id_mem2reg;
-        ex_regwrite <= id_regwrite;
-        ex_memread <= id_memread;
-        ex_memwrite <= id_memwrite;
-        ex_branch <= id_branch;
-        ex_uncond_branch <= id_uncond_branch;
-        ex_aluctrl <= id_aluctrl;
+            ex_busA <= id_busA;
+            ex_busB <= id_busB;
+            ex_nextseqpc <= id_nextseqpc;
+            ex_immediate <= id_immediate;
+            ex_rd <= id_rd;
+            ex_alusrc <= id_alusrc;
+            ex_mem2reg <= id_mem2reg;
+            ex_regwrite <= id_regwrite;
+            ex_memread <= id_memread;
+            ex_memwrite <= id_memwrite;
+            ex_branch <= id_branch;
+            ex_uncond_branch <= id_uncond_branch;
+            ex_aluctrl <= id_aluctrl;
+            ex_rf1 <= id_rf1;
+            ex_rf2 <= id_rf2;
+            ex_rf1_used <= id_rf1_used;
+            ex_rf2_used <= id_rf2_used;
         end
     end
 endmodule

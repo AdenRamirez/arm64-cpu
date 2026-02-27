@@ -12,7 +12,10 @@ module pipeline(
     wire[63:0] pc_plus4;
     wire[63:0] nextseqpc;
     wire[31:0] if_instr;
-
+    wire pc_write_enable;
+    wire stall;
+    wire id_ex_bubble;
+    
     assign pc_plus4 = pc + 64'd4;
 
     //Holding off on branching for now
@@ -22,7 +25,7 @@ module pipeline(
     always @(posedge CLK) begin
         if (!resetl)
             pc <= startpc;
-        else
+        else if (pc_write_enable)
             pc <= nextseqpc;
     end
     assign currentpc = pc;
@@ -40,10 +43,12 @@ module pipeline(
     
     // ----------------------------
     // IF/ID Register
-    // ----------------------------    
+    // ----------------------------   
+    wire if_id_write_enable; 
     pipe_if_id IF_ID(
         .clk(CLK),
         .resetl(resetl),
+        .write_enable(if_id_write_enable),
         .if_instr(if_instr),
         .if_nextseqpc(nextseqpc),
         .id_instr(id_instr),
@@ -54,8 +59,6 @@ module pipeline(
     // Instruction Decode Stage
     // Variables marked with id in the begining indicate that they will be sent to the next stage
     // ----------------------------
-    
-    wire reg2loc;
     wire id_alusrc;
     wire id_mem2reg;
     wire id_regwrite;
@@ -70,7 +73,6 @@ module pipeline(
     assign opcode = id_instr[31:21];
     
     control u_control(
-        .reg2loc(reg2loc),
         .alusrc(id_alusrc),
         .mem2reg(id_mem2reg),
         .regwrite(id_regwrite),
@@ -84,12 +86,26 @@ module pipeline(
      );
   
     wire [4:0]  id_rd;
-    wire [4:0]  rm;
-    wire [4:0]  rn;
+    wire [4:0]  id_rf1;
+    wire [4:0]  id_rf2;
+    wire id_rf1_used;
+    wire id_rf2_used;
+    wire [4:0]  id_ra;
+    wire [4:0]  id_rb;
+
+    id_register_select id_rs(
+        .instruction(id_instr),
+        .signop(signop),
+        .memwrite(id_memwrite),
     
-    assign id_rd = id_instr[4:0];
-    assign rm = id_instr[9:5];
-    assign rn = reg2loc ? id_instr[4:0] : id_instr[20:16];
+        .rf1(id_rf1),
+        .rf1_used(id_rf1_used),
+        .rf2(id_rf2),
+        .rf2_used(id_rf2_used),
+        .rd(id_rd),
+        .ra(id_ra),
+        .rb(id_rb)
+    );
     
     
     wire[63:0] id_busA;
@@ -103,11 +119,12 @@ module pipeline(
         .BusA(id_busA),
         .BusB(id_busB),
         .BusW(wb_memtoRegOut),
-        .RA(rm),
-        .RB(rn),
+        .RA(id_ra),
+        .RB(id_rb),
         .RW(wb_rd),
         .RegWr(wb_regwrite),
-        .Clk(CLK)
+        .Clk(CLK),
+        .resetl(resetl)
      );
     
     wire[63:0] id_immediate;
@@ -127,6 +144,8 @@ module pipeline(
     wire[63:0] ex_nextseqpc;
     wire[63:0] ex_immediate;
     wire[4:0] ex_rd;
+    wire[4:0] ex_rf1;
+    wire[4:0] ex_rf2;
     wire ex_alusrc;
     wire ex_mem2reg;
     wire ex_regwrite;
@@ -135,11 +154,16 @@ module pipeline(
     wire ex_branch;
     wire ex_uncond_branch;
     wire[3:0] ex_aluctrl;
+    wire ex_rf1_used;
+    wire ex_rf2_used;
+    
     
     
     pipe_id_ex ID_EX(
         .clk(CLK),
         .resetl(resetl),
+        .bubble(id_ex_bubble),
+        
         .id_busA(id_busA),
         .id_busB(id_busB),
         .id_nextseqpc(id_nextseqpc),
@@ -153,6 +177,10 @@ module pipeline(
         .id_branch(id_branch),
         .id_uncond_branch(id_uncond_branch),
         .id_aluctrl(id_aluctrl),
+        .id_rf1(id_rf1),
+        .id_rf2(id_rf2),
+        .id_rf1_used(id_rf1_used),
+        .id_rf2_used(id_rf2_used),
         
         .ex_busA(ex_busA),
         .ex_busB(ex_busB),
@@ -166,9 +194,18 @@ module pipeline(
         .ex_memwrite(ex_memwrite),
         .ex_branch(ex_branch),
         .ex_uncond_branch(ex_uncond_branch),
-        .ex_aluctrl(ex_aluctrl)
+        .ex_aluctrl(ex_aluctrl),
+        .ex_rf1(ex_rf1),
+        .ex_rf2(ex_rf2),
+        .ex_rf1_used(ex_rf1_used),
+        .ex_rf2_used(ex_rf2_used)
     );
     
+    assign stall = ex_memread && (ex_rd != 5'd31) && ((id_rf1_used && (ex_rd == id_rf1)) || (id_rf2_used && (ex_rd == id_rf2)));
+    
+    assign pc_write_enable = ~stall;
+    assign if_id_write_enable = ~stall;
+    assign id_ex_bubble = stall;
     // ----------------------------
     // Execution Stage
     // Variables marked with ex in the beginning indicate that they will be sent to the next stage
@@ -176,14 +213,17 @@ module pipeline(
     wire[63:0] alumuxout;
     wire ex_zero;
     wire[63:0] ex_aluout;
+    wire[63:0] alu_in_B;
+    wire[63:0] forward_A_val;
+    wire[63:0] forward_B_val;
     
-    assign alumuxout = (ex_alusrc) ? ex_immediate : ex_busB;
+    assign alu_in_B = ex_alusrc ? ex_immediate : forward_B_val;
     
     ALU alu(
         .BusW(ex_aluout),
         .Zero(ex_zero),
-        .BusA(ex_busA),
-        .BusB(alumuxout),
+        .BusA(forward_A_val),
+        .BusB(alu_in_B),
         .ALUCtrl(ex_aluctrl)
       );
       
@@ -236,6 +276,23 @@ module pipeline(
     // Variables marked with mem in the beginning indicate that they will be sent to the next stage
     // ----------------------------
     wire[63:0] mem_memout;
+    wire ex_mem_forward;
+    wire ex_mem_matchA;
+    wire mem_wb_match_A;
+    wire ex_mem_match_B;
+    wire mem_wb_match_B;
+    
+    assign ex_mem_forward = (mem_regwrite === 1'b1) && (mem_mem2reg === 1'b0) && (mem_rd != 5'd31);
+        
+    assign ex_mem_match_A = ex_mem_forward && (mem_rd == ex_rf1);
+    assign mem_wb_match_A = (wb_regwrite === 1'b1) && (wb_rd != 5'd31) && (wb_rd == ex_rf1);
+    
+    assign ex_mem_match_B = ex_mem_forward && (mem_rd == ex_rf2);
+    assign mem_wb_match_B = (wb_regwrite === 1'b1) && (wb_rd != 5'd31) && (wb_rd == ex_rf2);
+    
+    
+    assign forward_A_val = ex_mem_match_A ? mem_aluout : mem_wb_match_A ? wb_memtoRegOut : ex_busA;
+    assign forward_B_val = ex_mem_match_B ? mem_aluout : mem_wb_match_B ? wb_memtoRegOut : ex_busB;
     
     DataMemory dmem(
         .ReadData(mem_memout),

@@ -7,8 +7,9 @@ module InstructionMemory(
 
   always @(*) begin
     case (Address)
-        64'h000: Data = 32'hD2800002;
-        64'h004: Data = 32'hB4FFFFE2;
+        64'h000: Data = 32'hA20027E1;
+        64'h004: Data = 32'hF80083E1;
+        64'h008: Data = 32'hF84083E2;
       default: Data = 32'h00000000;
     endcase
   end
