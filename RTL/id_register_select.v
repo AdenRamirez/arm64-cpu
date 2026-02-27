@@ -62,6 +62,15 @@ module id_register_select(
             rf2_used = 1;
             rd = rt;
       end
+      
+      3'b100: begin
+        // M-type
+            rf1 = 5'd31;
+            rf2 = 5'd31;
+            rf1_used = 0;
+            rf2_used = 0;
+            rd = rt;
+      end
       default: begin
             rf1 = 5'd31;
             rf2 = 5'd31;

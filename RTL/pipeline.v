@@ -241,15 +241,18 @@ module pipeline(
     wire mem_memwrite;
     wire mem_memread;
     wire mem_branch;
-    wire mem_uncond_branch;
-        
+    wire mem_uncond_branch;    
+    wire [63:0] ex_store_data;
+    
+    assign ex_store_data = ex_memwrite  ? forward_B_val : ex_busB;
+    
     pipe_ex_mem EX_MEM(
         .clk(CLK),
         .resetl(resetl),
         .ex_zero(ex_zero),
         .ex_aluout(ex_aluout),
         .ex_nextseqpc(ex_nextseqpc),
-        .ex_busB(ex_busB),
+        .ex_busB(ex_store_data),
         .ex_rd(ex_rd),
         .ex_mem2reg(ex_mem2reg),
         .ex_regwrite(ex_regwrite),
@@ -281,6 +284,8 @@ module pipeline(
     wire mem_wb_match_A;
     wire ex_mem_match_B;
     wire mem_wb_match_B;
+    wire mem_store_forward;
+    wire [63:0] mem_write_data;
     
     assign ex_mem_forward = (mem_regwrite === 1'b1) && (mem_mem2reg === 1'b0) && (mem_rd != 5'd31);
         
@@ -294,10 +299,14 @@ module pipeline(
     assign forward_A_val = ex_mem_match_A ? mem_aluout : mem_wb_match_A ? wb_memtoRegOut : ex_busA;
     assign forward_B_val = ex_mem_match_B ? mem_aluout : mem_wb_match_B ? wb_memtoRegOut : ex_busB;
     
+    assign mem_store_forward = mem_memwrite && (wb_regwrite === 1'b1) && (wb_rd != 5'd31) && (wb_rd == mem_rd);
+
+    assign mem_write_data = mem_store_forward ? wb_memtoRegOut : mem_busB;
+    
     DataMemory dmem(
         .ReadData(mem_memout),
         .Address(mem_aluout),
-        .WriteData(mem_busB),
+        .WriteData(mem_write_data),
         .MemoryRead(mem_memread),
         .MemoryWrite(mem_memwrite),
         .Clock(CLK)
