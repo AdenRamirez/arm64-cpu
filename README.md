@@ -131,9 +131,9 @@ Planned progression:
 
 Planned Schedule:
 
-1. Structural 5-stage pipeline (Complete)
-2. Python Assembler (Complete)
-3. Data hazard detection and forwarding (Complete)
+1. Structural 5-stage pipeline Spring 2026
+2. Python Assembler Spring 2026
+3. Data hazard detection and forwarding Spring 2026
 4. Control hazard handling Spring 2026
 5. Branch prediction (static → 1-bit → 2-bit saturating counter) Spring 2026
 6. Branch Target Buffer Spring 2026
