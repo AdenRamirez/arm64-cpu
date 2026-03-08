@@ -3,3 +3,4 @@ arm64-cpu.cache/
 arm64-cpu.hw/
 arm64-cpu.ip_user_files/
 arm64-cpu.sim/
+*.xpr
