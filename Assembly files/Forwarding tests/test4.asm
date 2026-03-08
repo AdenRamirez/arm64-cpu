@@ -1,0 +1,5 @@
+MOVZ X1, 0x2, LSL 0
+ADD X2, X1, X1
+STUR X2, [XZR, #8]
+LDUR X3, [XZR, #8]
+ADD X4, X3, X1

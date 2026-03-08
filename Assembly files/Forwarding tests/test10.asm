@@ -1,0 +1,4 @@
+ADDI X1, XZR, #8
+ADDI X2, XZR, #7
+STUR X2, [X1, #0]
+LDUR X3, [X1, #0]

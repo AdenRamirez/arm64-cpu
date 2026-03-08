@@ -1,0 +1,3 @@
+LDUR X1, [XZR, #0]
+STUR X1, [XZR, #8]
+LDUR X2, [XZR, #8]

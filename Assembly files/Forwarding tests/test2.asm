@@ -1,0 +1,3 @@
+LDUR X1, [XZR, #0]
+ADD X2, X1, X1
+ADD X3, X2, X1
