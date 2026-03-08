@@ -39,7 +39,7 @@ Implemented features:
 - 32-entry register file (2 read ports, 1 write port)
 - Big-endian addressed data memory
 - Clean module separation (stages and pipeline registers)
-- Data hazard detection and forwarding (EX-EX and MEM-EX)
+- Data hazard detection and forwarding (EX-EX, MEM-EX, LDUR-STUR)
 - Load-use stall logic
 - Control hazard handling (in progress)
 
@@ -49,7 +49,7 @@ Implemented features:
 
 Implemented:
 - Data hazard detection unit
-- Forwarding paths (EX-EX and MEM-EX)
+- Forwarding paths (EX-EX, MEM-EX, LDUR-STUR)
 - Load-use stall logic
 
 In progress:
@@ -101,12 +101,21 @@ https://github.com/AdenRamirez/Single-Cycle-CPU
 
 -----------------------------------------------------------------------------
 
+## Getting Started (Vivado Project Setup)
+
+1. Clone the repository to your desired location
+2. Open Vivado
+3. In the Tcl Console, navigate to the repository root: cd <path_to_repo>
+4. Run the reconstruction script to generate the Vivado project: source arm64-cpu.tcl
+   
+-----------------------------------------------------------------------------
+
 ## Simulation
 
 1. Create an .asm file in the Assembly Files directory
 2. Run asmLoader.py and enter the filename when prompted
-3. Set line 35 in tb_pipeline.v to desired cycles
-4. Open Vivado and run simulation to completion: run all
+3. Open Vivado and run simulation to completion: run all
+4. You will see per-cycle outputs as well as final performance metrics (Cycles, Instructions, Stall Cycles, CPI, Stalls Per Instruction)
 
 If there are any issues with the Assembly Loader please create a github issue
 
